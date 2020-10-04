@@ -31,7 +31,7 @@ target = ""
 list2 = []
 
 for x in interfaces:
-    list2.append({ 'title': x, 'type': INTSEL, 'command': x })
+  list2.append({ 'title': x, 'type': INTSEL, 'command': x })
 #crates an empty menu data
 menu_data = {}
 #function to set the data of the menu, called everytime data changes
@@ -74,62 +74,35 @@ def getObjectives():
 def set_data():
     global menu_data
     menu_data = {
-        'title': "Wicrack MX", 'type': MENU, 'subtitle': "selected interface: " + selected_interface + " interface mode: " + interface_mode + " target: " + target,
-  	'options':[
-        	{ 'title': "select network interface", 'type': MENU, 'subtitle': "selected interface: " + selected_interface,
-        	'options': list2
-        	},
-        	{ 'title': "put interface in monitor mode", 'type': COMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
-        	{ 'title': "put interface in managed mode", 'type': COMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface +'mon' },
-		{ 'title': "Fix network issues", 'type': COMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
-		{ 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target,
-        'options': wifilist
-        },
-        	{ 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': COMMAND, 'command': 'echo > log funciona' },
-
-        	]
-        	},
-		{ 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-		{ 'title': "offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-		{ 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-		{ 'title': "WPS attack menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-		{ 'title': "WEP attack menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-		{ 'title': "Enterprise attack menu", 'type': MENU, 'subtitle': "DOS attak menu",
-        	'options': [
-          	{'title': "NO", 'type': EXITMENU, },
-
-        	]
-        	},
-
-  	]
-	}
+      'title': "Wicrack MX", 'type': MENU, 'subtitle': "selected interface: " + selected_interface + " interface mode: " + interface_mode + " target: " + target, 'options': [
+        { 'title': "select network interface", 'type': MENU, 'subtitle': "selected interface: " + selected_interface, 'options': list2 },
+        { 'title': "put interface in monitor mode", 'type': COMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
+        { 'title': "put interface in managed mode", 'type': COMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
+        { 'title': "Fix network issues", 'type': COMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
+        { 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
+        { 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': COMMAND, 'command': 'echo > log funciona' },
+        ]},
+        { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+        { 'title': "offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+        { 'title': "WPS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+        { 'title': "WEP attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+        { 'title': "Enterprise attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+          {'title': "NO", 'type': EXITMENU, },
+        ]},
+      ]
+	  }
 
 set_data()
 
@@ -158,7 +131,6 @@ def runmenu(menu, parent):
       screen.border(0)
       screen.addstr(2,2, menu['title'], curses.A_STANDOUT) # Title for this menu
       screen.addstr(4,2, menu['subtitle'], curses.A_BOLD) #Subtitle for this menu
-
 
       # Display all the menu items, showing the 'pos' item highlighted
       for index in range(optioncount):
@@ -203,13 +175,13 @@ def processmenu(menu, parent = None):
   optioncount = len(menu['options'])
   exitmenu = False
   if parent is None:
-       set_data()
-       menu = menu_data
+    set_data()
+    menu = menu_data
 
   while not exitmenu: #Loop until the user exits the menu
     getin = runmenu(menu, parent)
     if getin == optioncount:
-        exitmenu = True
+      exitmenu = True
 
     elif menu['options'][getin]['type'] == COMMAND:
       #menu = menu_data
@@ -224,51 +196,48 @@ def processmenu(menu, parent = None):
       os.system('echo > log ' + str(menu))
 
     elif menu['options'][getin]['type'] == MENU:
-        screen.clear() #clears previous screen on key press and updates display based on pos
-        menu = menu_data
-        processmenu(menu['options'][getin], menu) # display the submenu
-        screen.clear() #clears previous screen on key press and updates display based on pos
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      menu = menu_data
+      processmenu(menu['options'][getin], menu) # display the submenu
+      screen.clear() #clears previous screen on key press and updates display based on pos
 
     elif menu['options'][getin]['type'] == WIFISEL:
-        curses.def_prog_mode()    # save curent curses environment
-        os.system('reset')
-        screen.clear() #clears previous screen
-        wilist = getObjectives()
+      curses.def_prog_mode()    # save curent curses environment
+      os.system('reset')
+      screen.clear() #clears previous screen
+      wilist = getObjectives()
 
-        os.system('echo > log ' + str(wilist))
-        for x in wilist:
-            wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"] })
-        screen.clear() #clears previous screen on key press and updates display based on pos
-        menu = menu_data
-        screen.clear() #clears previous screen on key press and updates display based on pos
-        curses.reset_prog_mode()   # reset to 'current' curses environment
-        curses.curs_set(1)         # reset doesn't do this right
-        curses.curs_set(0)
+      os.system('echo > log ' + str(wilist))
+      for x in wilist:
+        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"] })
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      menu = menu_data
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      curses.reset_prog_mode()   # reset to 'current' curses environment
+      curses.curs_set(1)         # reset doesn't do this right
+      curses.curs_set(0)
 
-        processmenu(menu['options'][getin], menu) # display the submenu
-        screen.clear() #clears previous screen on key press and updates display based on pos
-
+      processmenu(menu['options'][getin], menu) # display the submenu
+      screen.clear() #clears previous screen on key press and updates display based on pos
 
     elif menu['options'][getin]['type'] == WIFIOPT:
-        target = menu['options'][getin]['command']
-        set_data()
-        exitmenu = True #returns to main menu
-        screen.clear()
-        screen.refresh()
-        
-
-
+      target = menu['options'][getin]['command']
+      set_data()
+      exitmenu = True #returns to main menu
+      screen.clear()
+      screen.refresh()
+    
     elif menu['options'][getin]['type'] == INTSEL:
-        selected_interface = menu['options'][getin]['command']
-        set_data()
-        exitmenu = True #returns to main menu
-        screen.clear()
-        screen.refresh()
-        os.system('echo > log ' + str(menu))
+      selected_interface = menu['options'][getin]['command']
+      set_data()
+      exitmenu = True #returns to main menu
+      screen.clear()
+      screen.refresh()
+      os.system('echo > log ' + str(menu))
 
 
     elif menu['options'][getin]['type'] == EXITMENU:
-        exitmenu = True
+      exitmenu = True
 
 # Main program
 processmenu(menu_data)
