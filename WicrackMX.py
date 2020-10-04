@@ -82,7 +82,7 @@ def set_data():
         	{ 'title': "put interface in monitor mode", 'type': COMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
         	{ 'title': "put interface in managed mode", 'type': COMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface +'mon' },
 		{ 'title': "Fix network issues", 'type': COMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
-		{ 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected tarjet: " + target,
+		{ 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target,
         'options': wifilist
         },
         	{ 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu",
@@ -199,7 +199,7 @@ def processmenu(menu, parent = None):
   global menu_data
   global wifilist
   global wilist
-
+  wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
   if parent is None:
@@ -249,6 +249,15 @@ def processmenu(menu, parent = None):
         screen.clear() #clears previous screen on key press and updates display based on pos
 
 
+    elif menu['options'][getin]['type'] == WIFIOPT:
+        target = menu['options'][getin]['command']
+        set_data()
+        exitmenu = True #returns to main menu
+        screen.clear()
+        screen.refresh()
+        
+
+
     elif menu['options'][getin]['type'] == INTSEL:
         selected_interface = menu['options'][getin]['command']
         set_data()
@@ -256,6 +265,7 @@ def processmenu(menu, parent = None):
         screen.clear()
         screen.refresh()
         os.system('echo > log ' + str(menu))
+
 
     elif menu['options'][getin]['type'] == EXITMENU:
         exitmenu = True
