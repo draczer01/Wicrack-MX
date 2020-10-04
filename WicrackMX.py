@@ -34,6 +34,43 @@ for x in interfaces:
 #crates an empty menu data
 menu_data = {}
 #function to set the data of the menu, called everytime data changes
+def getObjectives():
+  my_output = os.popen('nmcli -f ALL dev wifi').read()
+  my_output = my_output.split("\n")
+  my_output.pop(0)
+  my_body = my_output
+  my_new_body = []
+  for line in my_body:
+    temp_line = line.split(" ")
+    my_new_row = []
+    for val in temp_line:
+      if(val != "" and val != "*"):
+        my_new_row.append(val)
+    if(len(my_new_row) > 0):
+      my_new_row.pop(0)
+      my_row = {
+        "SSID": my_new_row[0],
+        "SSID-HEX": my_new_row[1],
+        "BSSID": my_new_row[2],
+        "MODE": my_new_row[3],
+        "CHANNEL": my_new_row[4],
+        "FREQ": my_new_row[5],
+        "FREQ_UNITS": my_new_row[6],
+        "RATE": my_new_row[7],
+        "RATE_UNITS": my_new_row[8],
+        "SIGNAL": my_new_row[9],
+        "BARS": my_new_row[10],
+        "DEVICE": my_new_row[len(my_new_row) - 3],
+        "ACTIVE": my_new_row[len(my_new_row) - 2],
+        "DBUS-PATH": my_new_row[len(my_new_row) - 1],
+      }
+      if(my_new_row[11] == "WPA1" and my_new_row[12] == "WPA2"):
+        my_row["SECURITY"] = "WPA1/WPA2"
+      elif(my_new_row[11] == "WPA2"):
+        my_row["SECURITY"] = "WPA2"
+      my_new_body.append(my_row)
+  return my_new_body
+
 def set_data():
     global menu_data
     menu_data = {
