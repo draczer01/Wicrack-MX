@@ -237,7 +237,7 @@ def processmenu(menu, parent = None):
 
         os.system('echo > log ' + str(wilist))
         for x in wilist:
-            wifilist.append({ 'title': x[0].SSID, 'type': WIFIOPT, 'command': x[0].SSID })
+            wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"] })
         screen.clear() #clears previous screen on key press and updates display based on pos
         menu = menu_data
         screen.clear() #clears previous screen on key press and updates display based on pos
