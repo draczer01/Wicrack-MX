@@ -1,5 +1,3 @@
-# My first contribution
-
 from time import sleep
 import netifaces
 import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
@@ -22,21 +20,16 @@ INTSEL = "INTSEL" #select interface
 WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
 
-
-
 wifilist = []
 interfaces = netifaces.interfaces()
 
-selected_interface=""
+selected_interface = ""
 interface_mode = ""
 target = ""
 
-
-
-list2=[]
+list2 = []
 
 for x in interfaces:
-
     list2.append({ 'title': x, 'type': INTSEL, 'command': x })
 #crates an empty menu data
 menu_data = {}
@@ -101,7 +94,6 @@ def set_data():
   	]
 	}
 
-
 set_data()
 
 # This function displays the appropriate menu and returns the option selected
@@ -110,7 +102,7 @@ def runmenu(menu, parent):
   # work out what text to display as the last menu option
   if parent is None:
     set_data()
-    menu= menu_data
+    menu = menu_data
     #os.system('echo > log menu principal')
     lastoption = "Exit"
   else:
@@ -118,12 +110,12 @@ def runmenu(menu, parent):
 
   optioncount = len(menu['options']) # how many options in this menu
 
-  pos=0 #pos is the zero-based index of the hightlighted menu option. Every time runmenu is called, position returns to 0, when runmenu ends the position is returned and tells the program what opt$
-  oldpos=None # used to prevent the screen being redrawn every time
+  pos = 0 #pos is the zero-based index of the hightlighted menu option. Every time runmenu is called, position returns to 0, when runmenu ends the position is returned and tells the program what opt$
+  oldpos = None # used to prevent the screen being redrawn every time
   x = None #control for while loop, let's you scroll through options until return key is pressed then returns pos to program
 
   # Loop until return key is pressed
-  while x !=ord('\n'):
+  while x != ord('\n'):
     if pos != oldpos:
       oldpos = pos
       screen.border(0)
@@ -134,12 +126,12 @@ def runmenu(menu, parent):
       # Display all the menu items, showing the 'pos' item highlighted
       for index in range(optioncount):
         textstyle = n
-        if pos==index:
+        if pos == index:
           textstyle = h
         screen.addstr(5+index,4, "%d - %s" % (index+1, menu['options'][index]['title']), textstyle)
       # Now display Exit/Return at bottom of menu
       textstyle = n
-      if pos==optioncount:
+      if pos == optioncount:
         textstyle = h
       screen.addstr(5+optioncount,4, "%d - %s" % (optioncount+1, lastoption), textstyle)
       screen.refresh()
@@ -163,7 +155,7 @@ def runmenu(menu, parent):
   return pos
 
 # This function calls showmenu and then acts on the selected item
-def processmenu(menu, parent=None):
+def processmenu(menu, parent = None):
   global selected_interface
   global interface_mode
   global target
@@ -174,7 +166,7 @@ def processmenu(menu, parent=None):
   exitmenu = False
   if parent is None:
        set_data()
-       menu= menu_data
+       menu = menu_data
 
   while not exitmenu: #Loop until the user exits the menu
     getin = runmenu(menu, parent)
@@ -182,7 +174,7 @@ def processmenu(menu, parent=None):
         exitmenu = True
 
     elif menu['options'][getin]['type'] == COMMAND:
-      #menu= menu_data
+      #menu = menu_data
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
       screen.clear() #clears previous screen
@@ -195,22 +187,22 @@ def processmenu(menu, parent=None):
 
     elif menu['options'][getin]['type'] == MENU:
         screen.clear() #clears previous screen on key press and updates display based on pos
-        menu= menu_data
+        menu = menu_data
         processmenu(menu['options'][getin], menu) # display the submenu
         screen.clear() #clears previous screen on key press and updates display based on pos
 
     elif menu['options'][getin]['type'] == WIFISEL:
-        wifi= os.system('nmcli dev wifi')
+        wifi = os.system('nmcli dev wifi')
         for x in wifi:
             wifilist.append({ 'title': x, 'type': WIFIOPT, 'command': x })
         screen.clear() #clears previous screen on key press and updates display based on pos
-        menu= menu_data
+        menu = menu_data
         processmenu(menu['options'][getin], menu) # display the submenu
         screen.clear() #clears previous screen on key press and updates display based on pos
 
 
     elif menu['options'][getin]['type'] == INTSEL:
-        selected_interface=menu['options'][getin]['command']
+        selected_interface = menu['options'][getin]['command']
         set_data()
         exitmenu = True #returns to main menu
         screen.clear()
