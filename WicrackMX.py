@@ -35,10 +35,9 @@ for x in interfaces:
 menu_data = {}
 #function to set the data of the menu, called everytime data changes
 def getObjectives():
-  my_output = os.popen('nmcli -f ALL dev wifi').read()
-  my_output = my_output.split("\n")
-  my_output.pop(0)
-  my_body = my_output
+  my_body = os.popen('nmcli -f ALL dev wifi').read()
+  my_body = my_body.split("\n")
+  my_body.pop(0)
   my_new_body = []
   for line in my_body:
     temp_line = line.split(" ")
