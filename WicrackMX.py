@@ -21,6 +21,7 @@ WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
 
 wifilist = []
+wilist = []
 interfaces = netifaces.interfaces()
 
 selected_interface = ""
@@ -197,6 +198,7 @@ def processmenu(menu, parent = None):
   global target
   global menu_data
   global wifilist
+  global wilist
 
   optioncount = len(menu['options'])
   exitmenu = False
@@ -228,11 +230,21 @@ def processmenu(menu, parent = None):
         screen.clear() #clears previous screen on key press and updates display based on pos
 
     elif menu['options'][getin]['type'] == WIFISEL:
-        wifi = os.system('nmcli dev wifi')
-        for x in wifi:
-            wifilist.append({ 'title': x, 'type': WIFIOPT, 'command': x })
+        curses.def_prog_mode()    # save curent curses environment
+        os.system('reset')
+        screen.clear() #clears previous screen
+        wilist = getObjectives()
+
+        os.system('echo > log ' + str(wilist))
+        for x in wilist:
+            wifilist.append({ 'title': x[0].SSID, 'type': WIFIOPT, 'command': x[0].SSID })
         screen.clear() #clears previous screen on key press and updates display based on pos
         menu = menu_data
+        screen.clear() #clears previous screen on key press and updates display based on pos
+        curses.reset_prog_mode()   # reset to 'current' curses environment
+        curses.curs_set(1)         # reset doesn't do this right
+        curses.curs_set(0)
+
         processmenu(menu['options'][getin], menu) # display the submenu
         screen.clear() #clears previous screen on key press and updates display based on pos
 
