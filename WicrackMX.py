@@ -33,6 +33,7 @@ list2 = []
 
 for x in interfaces:
   list2.append({ 'title': x, 'type': INTSEL, 'command': x })
+
 #crates an empty menu data
 menu_data = {}
 #function to set the data of the menu, called everytime data changes
@@ -240,7 +241,6 @@ def processmenu(menu, parent = None):
       screen.clear()
       screen.refresh()
       os.system('echo > log ' + str(get_mac_address(interface= selected_interface )))
-
 
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
