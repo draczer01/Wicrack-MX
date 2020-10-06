@@ -202,7 +202,7 @@ def processmenu(menu, parent = None):
       curses.curs_set(0)
       os.system('echo > log ' + str(menu))
 
-    elif menu_data['options'][getin]['type'] == MAINCOMMAND:
+    elif menu['options'][getin]['type'] == MAINCOMMAND:
       #menu = menu_data
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
