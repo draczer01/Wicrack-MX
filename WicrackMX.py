@@ -45,14 +45,14 @@ def getObjectives(interface):
   body = []
   for wifi_network in cell:
     row = {
-      "SSID": wifi_network["ssid"],
-      "ADDRESS": wifi_network["address"],
-      "MODE": wifi_network["mode"],
-      "CHANNEL": wifi_network["channel"],
-      "FREQ": wifi_network["frequency"],
-      "RATE": wifi_network["bitrates"],
-      "SIGNAL": wifi_network["signal"],
-      "QUALITY": wifi_network["quality"],
+      "SSID": wifi_network.ssid,
+      "ADDRESS": wifi_network.address,
+      "MODE": wifi_network.mode,
+      "CHANNEL": wifi_network.channel,
+      "FREQ": wifi_network.frequency,
+      "RATE": wifi_network.bitrates,
+      "SIGNAL": wifi_network.signal,
+      "QUALITY": wifi_network.quality,
       "DEVICE": interface
     }
     body.append(row)
@@ -209,11 +209,11 @@ def processmenu(menu, parent = None):
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
       screen.clear() #clears previous screen
-      wilist = getObjectives()
+      wilist = getObjectives(selected_interface)
 
       os.system('echo > log ' + str(wilist))
       for x in wilist:
-        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["BSSID"]})
+        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["ADDRESS"]})
       screen.clear() #clears previous screen on key press and updates display based on pos
       menu = menu_data
       screen.clear() #clears previous screen on key press and updates display based on pos
