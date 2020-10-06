@@ -1,4 +1,5 @@
 from getmac import get_mac_address
+from wifi import Cell, Scheme
 import netifaces
 import wifi, binascii
 import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
@@ -16,6 +17,7 @@ curses.curs_set(0)
 
 MENU = "menu"
 COMMAND = "command"
+MAINCOMMAND = "maincommand"
 EXITMENU = "exitmenu"
 INTSEL = "INTSEL" #select interface
 WIFISEL = "WIFISEL" #used to generat wifi target list
@@ -61,9 +63,9 @@ def set_data():
     menu_data = {
       'title': "Wicrack MX", 'type': MENU, 'subtitle': "selected interface: " + selected_interface + " interface mode: " + interface_mode + " target: " + target, 'options': [
         { 'title': "select network interface", 'type': MENU, 'subtitle': "selected interface: " + selected_interface, 'options': list2 },
-        { 'title': "put interface in monitor mode", 'type': COMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
-        { 'title': "put interface in managed mode", 'type': COMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
-        { 'title': "Fix network issues", 'type': COMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
+        { 'title': "put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
+        { 'title': "put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
+        { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
         { 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
         { 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
           {'title': "DEAUTH", 'type': COMMAND, 'command': 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
@@ -182,6 +184,20 @@ def processmenu(menu, parent = None):
       curses.curs_set(1)         # reset doesn't do this right
       curses.curs_set(0)
       os.system('echo > log ' + str(menu))
+
+    elif menu['options'][getin]['type'] == MAINCOMMAND:
+      #menu = menu_data
+      curses.def_prog_mode()    # save curent curses environment
+      os.system('reset')
+      screen.clear() #clears previous screen
+      os.system('echo > log ' + (menu_data['options'][getin]['command']))
+      os.system(menu_data['options'][getin]['command']) # run the command
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      curses.reset_prog_mode()   # reset to 'current' curses environment
+      curses.curs_set(1)         # reset doesn't do this right
+      curses.curs_set(0)
+      os.system('echo > log ' + str(menu))
+
 
     elif menu['options'][getin]['type'] == MENU:
       screen.clear() #clears previous screen on key press and updates display based on pos
