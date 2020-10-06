@@ -209,7 +209,7 @@ def processmenu(menu, parent = None):
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
       screen.clear() #clears previous screen
-      wilist = getObjectives()
+      wilist = getObjectives(selected_interface)
 
       os.system('echo > log ' + str(wilist))
       for x in wilist:
