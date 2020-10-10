@@ -103,7 +103,7 @@ def runmenu(menu, parent):
     lastoption = "Exit"
   else:
     lastoption = "Return to %s menu" % parent['title']
-
+   # //uwu ya llegue
   optioncount = len(menu['options']) # how many options in this menu
 
   pos = 0 #pos is the zero-based index of the hightlighted menu option. Every time runmenu is called, position returns to 0, when runmenu ends the position is returned and tells the program what opt$
