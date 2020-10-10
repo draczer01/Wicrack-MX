@@ -1,7 +1,6 @@
 from getmac import get_mac_address
 from wifi import Cell, Scheme
 import netifaces
-import wifi, binascii
 import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
@@ -61,31 +60,31 @@ def getObjectives(interface):
 def set_data():
     global menu_data
     menu_data = {
-      'title': "Wicrack MX", 'type': MENU, 'subtitle': "selected interface: " + selected_interface + " interface mode: " + interface_mode + " target: " + target, 'options': [
-        { 'title': "select network interface", 'type': MENU, 'subtitle': "selected interface: " + selected_interface, 'options': list2 },
-        { 'title': "put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
-        { 'title': "put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
+      'title': "Wicrack MX", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface + " Interface mode: " + interface_mode + " Target: " + target, 'options': [
+        { 'title': "Select network interface", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface, 'options': list2 },
+        { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
+        { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
         { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
-        { 'title': "select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
-        { 'title': "DOS atack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
+        { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
           {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
         ]},
-        { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
-        { 'title': "offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
-		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
-        { 'title': "WPS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "WPS attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
-        { 'title': "WEP attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "WEP attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
-        { 'title': "Enterprise attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
+        { 'title': "Enterprise attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
         ]},
       ]
@@ -190,13 +189,13 @@ def processmenu(menu, parent = None):
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
       screen.clear() #clears previous screen
-      os.system('echo > log ' + (menu_data['options'][getin]['command']))
+      #os.system('echo > log ' + (menu_data['options'][getin]['command']))
       os.system(menu_data['options'][getin]['command']) # run the command
       screen.clear() #clears previous screen on key press and updates display based on pos
       curses.reset_prog_mode()   # reset to 'current' curses environment
       curses.curs_set(1)         # reset doesn't do this right
       curses.curs_set(0)
-      os.system('echo > log ' + str(menu))
+      #os.system('echo > log ' + str(menu))
 
 
     elif menu['options'][getin]['type'] == MENU:
@@ -234,12 +233,18 @@ def processmenu(menu, parent = None):
     
     elif menu['options'][getin]['type'] == INTSEL:
       selected_interface = menu['options'][getin]['command']
+      #is_monitor = selected_interface.find("mon")
+      is_monitor = selected_interface[-3:]
+      if is_monitor == 'mon':
+        os.system('sudo airmon-ng stop ' + selected_interface)
+        selected_interface = selected_interface.replace('mon', '')
+        os.system('sudo ifconfig ' + selected_interface + ' up')
       interface_mac = str(get_mac_address(interface= selected_interface ))
       set_data()
       exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
-      os.system('echo > log ' + str(get_mac_address(interface= selected_interface )))
+      # os.system('echo > log ' + str(get_mac_address(interface= selected_interface )))
 
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
