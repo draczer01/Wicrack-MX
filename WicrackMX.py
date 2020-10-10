@@ -21,6 +21,8 @@ EXITMENU = "exitmenu"
 INTSEL = "INTSEL" #select interface
 WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
+CAPSEL = "CAPSEL" #select capture files
+DICTSEL = "DICTSEL" #select Dictionary files
 
 wifilist = []
 wilist = []
@@ -31,6 +33,8 @@ interface_mode = ""
 target = ""
 target_BSSID =""
 interface_mac=""
+capture_file=""
+password_list=""
 list2 = []
 
 for x in interfaces:
@@ -73,7 +77,9 @@ def set_data():
           {'title': "NO", 'type': EXITMENU, },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "NO", 'type': EXITMENU, },
+          {'title': "select capture file", 'type': COMMAND, 'command': ''  },
+          {'title': "select dictionary file file", 'type': COMMAND, 'command': ''  },
+          {'title': "aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w' + password_list + '-b' + capture_file  },
         ]},
 		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
