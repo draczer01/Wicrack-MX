@@ -246,7 +246,16 @@ def processmenu(menu, parent = None):
 
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
-
+# Custom errors
+def errorMessage(errorCode):
+ switcher = {
+     1: "",
+     2: "",
+     3: "",
+     4: "",
+     5: ""
+ }
+ print switcher.get(errorType, "Unrecognizable error")
 # Main program
 processmenu(menu_data)
 curses.endwin() #VITAL! This closes out the menu system and returns you to the bash prompt.
