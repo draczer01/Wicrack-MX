@@ -1,6 +1,8 @@
 log
 .vscode/*
 cap/*
+!cap/
 dictionary/*
+!dictionary/
 .vs/*
 .vs
