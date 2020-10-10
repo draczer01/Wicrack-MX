@@ -233,7 +233,6 @@ def processmenu(menu, parent = None):
     
     elif menu['options'][getin]['type'] == INTSEL:
       selected_interface = menu['options'][getin]['command']
-      #is_monitor = selected_interface.find("mon")
       is_monitor = selected_interface[-3:]
       if is_monitor == 'mon':
         os.system('sudo airmon-ng stop ' + selected_interface)
