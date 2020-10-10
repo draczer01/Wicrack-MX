@@ -174,12 +174,9 @@ def processmenu(menu, parent = None):
   global wilist
   global target_BSSID
   global interface_mac
-<<<<<<< HEAD
   global target_channel
-=======
   global list2
   global interfaces
->>>>>>> 3f8a9d0c0c297f27cb8977fb8ec510de8eea9bd0
   wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
@@ -278,17 +275,6 @@ def processmenu(menu, parent = None):
       exitmenu = True
 
 # Custom errors
-<<<<<<< HEAD
-def errorMessage(errorCode):
- switcher = {
-     1: "",
-     2: "",
-     3: "",
-     4: "",
-     5: ""
- }
- #print switcher.get(errorCode, "Unrecognizable error")
-=======
 def errorMessage(errorCode, clearScreen, pressKey):
   clearScreen.clear()
   clearScreen.refresh()
@@ -296,7 +282,6 @@ def errorMessage(errorCode, clearScreen, pressKey):
   print(str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
   pressKey.initscr().getch()
 
->>>>>>> 3f8a9d0c0c297f27cb8977fb8ec510de8eea9bd0
 # Main program
 processmenu(menu_data)
 curses.endwin() #VITAL! This closes out the menu system and returns you to the bash prompt.
