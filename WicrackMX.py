@@ -109,7 +109,6 @@ def runmenu(menu, parent):
     lastoption = "Exit"
   else:
     lastoption = "Return to %s menu" % parent['title']
-
   optioncount = len(menu['options']) # how many options in this menu
 
   pos = 0 #pos is the zero-based index of the hightlighted menu option. Every time runmenu is called, position returns to 0, when runmenu ends the position is returned and tells the program what opt$
@@ -253,7 +252,16 @@ def processmenu(menu, parent = None):
 
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
-
+# Custom errors
+def errorMessage(errorCode):
+ switcher = {
+     1: "",
+     2: "",
+     3: "",
+     4: "",
+     5: ""
+ }
+ print switcher.get(errorType, "Unrecognizable error")
 # Main program
 processmenu(menu_data)
 curses.endwin() #VITAL! This closes out the menu system and returns you to the bash prompt.
