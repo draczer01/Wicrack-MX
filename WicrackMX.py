@@ -286,7 +286,7 @@ def errorMessage(errorCode, clearScreen, pressKey):
   clearScreen.clear()
   clearScreen.refresh()
   print('')
-  print('Error code 'str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
+  print('Error code ' + str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
   pressKey.initscr().getch()
 
 # Main program
