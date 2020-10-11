@@ -1,7 +1,6 @@
 from getmac import get_mac_address
 from wifi import Cell, Scheme
-import netifaces
-import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
+import netifaces, curses, os #curses is the interface for capturing key presses on the menu, os launches the files
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
 curses.cbreak() # Disables line buffering (runs each key as it is pressed rather than waiting for the return key to pressed)
@@ -291,6 +290,13 @@ def displayMessage(errorType):
   screen.refresh()
   screen.getch()
   screen.clear()
+
+def listFilesInDirectory(path):
+  listFiles = []
+  for (dirPath, dirNames, fileNames) in os.walk(path):
+    listFiles.extend(fileNames)
+    break
+  return listFiles
 
 # Main program
 processmenu(menu_data)
