@@ -259,7 +259,6 @@ def processmenu(menu, parent = None):
       screen.refresh()
     
     elif menu['options'][getin]['type'] == INTSEL:
-      #errorMessage({"status": 200, "description": "Hello World"}, screen, curses)
       #displayMessage({"title": 'My New Message', "description": "Hello World"})
       is_monitor = selected_interface[-3:]
       if is_monitor == 'mon':
