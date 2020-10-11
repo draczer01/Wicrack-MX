@@ -260,6 +260,7 @@ def processmenu(menu, parent = None):
     
     elif menu['options'][getin]['type'] == INTSEL:
       #errorMessage({"status": 200, "description": "Hello World"}, screen, curses)
+      #displayMessage({"title": 'My New Message', "description": "Hello World"})
       is_monitor = selected_interface[-3:]
       if is_monitor == 'mon':
         os.system('sudo airmon-ng stop ' + selected_interface)
@@ -281,13 +282,16 @@ def processmenu(menu, parent = None):
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
 
-# Custom errors
-def errorMessage(errorCode, clearScreen, pressKey):
-  clearScreen.clear()
-  clearScreen.refresh()
-  print('')
-  print('Error code ' + str(errorCode["status"]) + ': ' + errorCode["description"] + ', press any key to continue...')
-  pressKey.initscr().getch()
+# Display Message Function  
+def displayMessage(errorType):
+  screen.clear()
+  screen.border(0)
+  screen.addstr(2, 2, errorType['title'], curses.A_STANDOUT)
+  screen.addstr(4, 2, errorType['description'], curses.A_BOLD)
+  screen.addstr(5, 2, 'Press Enter to continue...', curses.A_BOLD)
+  screen.refresh()
+  screen.getch()
+  screen.clear()
 
 # Main program
 processmenu(menu_data)
