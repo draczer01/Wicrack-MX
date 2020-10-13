@@ -37,8 +37,10 @@ INTSEL = "INTSEL" #select interface
 WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
 CAPSEL = "CAPSEL" #select capture files
+CAPOPT = "CAPOPT"
 DICTSEL = "DICTSEL" #select Dictionary files
-MULTICOMMAND = "MULTICOMMAND"
+DICTOPT = "DICTOPT"
+MULTICOMMAND = "MULTICOMMAND"#allows comand 1 and comand 2 to be executed in diferent threads
 DICTGEN = "DICTGEN"
 
 wifilist = []
@@ -54,6 +56,8 @@ target_channel = ""
 capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
 password_list = "dictionary/axtel.txt"
 list2 = []
+capfiles=[]
+dictfiles=[]
 
 def autogeneratepwlist():
    #if axtel not in sys.modules:
@@ -124,8 +128,12 @@ def set_data():
           {'title': "Capture handshake with airplay", 'type': MULTICOMMAND, 'command1': 'sudo xterm -geometry 120x30 -e '+ airmoncommand, 'command2': 'sudo xterm -geometry 90x30 -e ' + airplaycommand   },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "Select capture file", 'type': COMMAND, 'command': ''  },
-          {'title': "Select dictionary file file", 'type': COMMAND, 'command': ''  },
+          {'title': "Select capture file", 'type': CAPSEL, 'subtitle': "select capture file", 'options': 
+             capfiles
+             },
+          {'title': "Select dictionary file", 'type': DICTSEL, 'subtitle': "select dictionary file", 'options': 
+            dictfiles
+            },
           {'title': "Aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
           {'title': "Hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
         ]},
@@ -218,6 +226,10 @@ def processmenu(menu, parent = None):
   global target_channel
   global list2
   global interfaces
+  global capfiles
+  global capture_file
+  global password_list
+  global dictfiles
   wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
@@ -287,6 +299,31 @@ def processmenu(menu, parent = None):
       processmenu(menu['options'][getin], menu) # display the submenu
       screen.clear() #clears previous screen on key press and updates display based on pos
 
+
+    elif menu['options'][getin]['type'] == CAPSEL:
+      temp_files = listFilesInDirectory("cap")
+      for arch in temp_files:
+         if(arch[4:]==".cap"):
+           capfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'cap/' + arch})
+      set_data()
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      menu = menu_data
+      processmenu(menu['options'][getin], menu) # display the submenu
+      screen.clear() #clears previous screen on key press and updates display based on pos
+
+
+    elif menu['options'][getin]['type'] == DICTSEL:
+      temp_files = listFilesInDirectory("dictionary")
+      for arch in temp_files:
+         if(arch[4:]==".txt"):
+           dictfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'dictionary/' + arch})
+      set_data()
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      menu = menu_data
+      processmenu(menu['options'][getin], menu) # display the submenu
+      screen.clear() #clears previous screen on key press and updates display based on pos
+
+
     elif menu['options'][getin]['type'] == WIFISEL:
       curses.def_prog_mode()    # save curent curses environment
       os.system('reset')
@@ -311,7 +348,21 @@ def processmenu(menu, parent = None):
       target_BSSID = menu['options'][getin]['BSSID']
       target_channel= str(menu['options'][getin]['CHANNEL'])
       set_data()
-      exitmenu = True #returns to main menu
+      #exitmenu = True #returns to main menu
+      screen.clear()
+      screen.refresh()
+
+    elif menu['options'][getin]['type'] == CAPOPT:
+      capture_file = menu['options'][getin]['command']
+      set_data()
+      #exitmenu = True #returns to main menu
+      screen.clear()
+      screen.refresh()
+
+    elif menu['options'][getin]['type'] == DICTOPT:
+      password_list = menu['options'][getin]['command']
+      set_data()
+      #exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
 
