@@ -39,6 +39,7 @@ WIFIOPT = "WIFIOPT" #select wifi target
 CAPSEL = "CAPSEL" #select capture files
 DICTSEL = "DICTSEL" #select Dictionary files
 MULTICOMMAND = "MULTICOMMAND"
+DICTGEN = "DICTGEN"
 
 wifilist = []
 wilist = []
@@ -53,6 +54,18 @@ target_channel = ""
 capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
 password_list = "dictionary/axtel.txt"
 list2 = []
+
+def autogeneratepwlist():
+   #if axtel not in sys.modules:
+    # axtelimp = False
+   #else:
+     if("AXTEL XTREMO-" in target):
+       axtel.axtel(target)
+   #if izzi not in sys.modules:
+     #izziimp= False
+   #else:
+     if("izzi" in target):
+       izzi.izzi(target)
 
 def runcom(com, state):
   if state:
@@ -127,6 +140,9 @@ def set_data():
         ]},
         { 'title': "Enterprise attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
+        ]},
+        { 'title': "Dictionary generation menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
+          {'title': "AUTOGEN(generate dictionary automatically)", 'type': DICTGEN, 'module':'autogen' },
         ]},
       ]
 	  }
@@ -298,6 +314,12 @@ def processmenu(menu, parent = None):
       exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
+
+    elif menu['options'][getin]['type'] == DICTGEN:
+      gen = menu['options'][getin]['module']
+      if(gen == 'autogen'):
+        autogeneratepwlist()
+        password_list = "dictionary/" + target + ".txt"
     
     elif menu['options'][getin]['type'] == INTSEL:
       #displayMessage({"title": 'My New Message', "description": "Hello World"})
