@@ -2,6 +2,15 @@ from getmac import get_mac_address
 from wifi import Cell, Scheme
 import netifaces, curses, os #curses is the interface for capturing key presses on the menu, os launches the files
 import _thread
+import sys
+
+sys.path.insert(1, os.getcwd()+'/dictionary_modules')
+
+try:
+    import axtel
+except:
+    pass
+
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
 curses.cbreak() # Disables line buffering (runs each key as it is pressed rather than waiting for the return key to pressed)
