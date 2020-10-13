@@ -1,8 +1,8 @@
 import itertools
 
-def axtel(ssid):
+def izzi(ssid):
 
-    filename = "/dictionary/" + ssid + ".txt"
+    filename = "dictionary/" + ssid + ".txt"
 
     archivo = open(filename,'w');
 
@@ -13,3 +13,4 @@ def axtel(ssid):
             file.write(par2 + '\n')
     
    # print(par2)
+
