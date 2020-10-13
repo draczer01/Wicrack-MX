@@ -11,6 +11,12 @@ try:
 except:
     pass
 
+try:
+    import izzi
+except:
+    pass
+
+
 screen = curses.initscr() #initializes a new window for capturing key presses
 curses.noecho() # Disables automatic echoing of key presses (prevents program from input each key twice)
 curses.cbreak() # Disables line buffering (runs each key as it is pressed rather than waiting for the return key to pressed)
