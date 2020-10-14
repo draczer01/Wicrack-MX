@@ -323,7 +323,7 @@ def processmenu(menu, parent = None):
     elif menu['options'][getin]['type'] == DICTSEL:
       screen.clear() #clears previous screen on key press and updates display based on pos
       #set_data()
-      menu = menu_data
+      #menu = menu_data
       menu['options'][getin]['options'] = dictfiles
       processmenu(menu['options'][getin], menu) # display the submenu
       screen.clear() #clears previous screen on key press and updates display based on pos
