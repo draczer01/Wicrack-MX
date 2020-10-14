@@ -112,6 +112,7 @@ menu_data = {}
 def set_data():
     global menu_data
     global list2
+    global capfiles, dictfiles
     airmoncommand = 'airodump-ng -c '+ target_channel + ' --bssid ' + target_BSSID + ' -w ' + 'cap/' + '\"' + target + '\"' + '_' + target_BSSID + ' ' +  selected_interface 
     airplaycommand = 'aireplay-ng --deauth 1000 -a ' + target_BSSID + ' -h ' + interface_mac + " " + selected_interface
     menu_data = {
@@ -231,6 +232,16 @@ def processmenu(menu, parent = None):
   global password_list
   global dictfiles
   wifilist = []
+  capfiles = []
+  dictfiles = []
+  temp_files = listFilesInDirectory("cap")
+  for arch in temp_files:
+    if(arch[-4:]==".cap"):
+      capfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'cap/' + arch})
+  temp_files = listFilesInDirectory("dictionary")
+  for arch in temp_files:
+    if(arch[-4:]==".txt"):
+      dictfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'dictionary/' + arch})
   optioncount = len(menu['options'])
   exitmenu = False
   if parent is None:
@@ -301,25 +312,19 @@ def processmenu(menu, parent = None):
 
 
     elif menu['options'][getin]['type'] == CAPSEL:
-      temp_files = listFilesInDirectory("cap")
-      for arch in temp_files:
-         if(arch[4:]==".cap"):
-           capfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'cap/' + arch})
-      set_data()
       screen.clear() #clears previous screen on key press and updates display based on pos
-      menu = menu_data
+      #set_data()
+      #menu = menu_data
+      menu['options'][getin]['options'] = capfiles
       processmenu(menu['options'][getin], menu) # display the submenu
       screen.clear() #clears previous screen on key press and updates display based on pos
 
 
     elif menu['options'][getin]['type'] == DICTSEL:
-      temp_files = listFilesInDirectory("dictionary")
-      for arch in temp_files:
-         if(arch[4:]==".txt"):
-           dictfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'dictionary/' + arch})
-      set_data()
       screen.clear() #clears previous screen on key press and updates display based on pos
+      #set_data()
       menu = menu_data
+      menu['options'][getin]['options'] = dictfiles
       processmenu(menu['options'][getin], menu) # display the submenu
       screen.clear() #clears previous screen on key press and updates display based on pos
 
@@ -348,7 +353,7 @@ def processmenu(menu, parent = None):
       target_BSSID = menu['options'][getin]['BSSID']
       target_channel= str(menu['options'][getin]['CHANNEL'])
       set_data()
-      #exitmenu = True #returns to main menu
+      exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
 
