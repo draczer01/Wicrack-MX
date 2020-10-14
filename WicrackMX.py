@@ -53,8 +53,8 @@ target = ""
 target_BSSID = ""
 interface_mac = ""
 target_channel = ""
-capture_file = "\"cap/AXTEL XTREMO-3E6E_62:02:71:88:3E:6F-01.cap\""
-password_list = "dictionary/axtel.txt"
+capture_file = ""
+password_list = ""
 list2 = []
 capfiles=[]
 dictfiles=[]
@@ -135,8 +135,8 @@ def set_data():
           {'title': "Select dictionary file", 'type': DICTSEL, 'subtitle': "select dictionary file", 'options': 
             dictfiles
             },
-          {'title': "Aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + password_list + ' -b ' + target_BSSID + ' ' + capture_file + ' -l ' + target + '.pswd'  },
-          {'title': "Hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o ' + password_list + ' ' + capture_file  },
+          {'title': "Aircrack", 'type': COMMAND, 'command': 'aircrack-ng -w ' + '\"' + password_list + '\"' + ' -b ' + target_BSSID + ' ' + '\"' + capture_file + '\"' + ' -l ' + '\"' + target +  '.pswd' + '\"' },
+          {'title': "Hashcat", 'type': COMMAND, 'command': 'hashcat -m 2500 -o '+ '\"' + password_list + '\"' + ' ' + '\"' + capture_file + '\"' },
         ]},
 		    { 'title': "Evil Twin attack menu", 'type': MENU, 'subtitle': "DOS attack menu", 'options': [
           {'title': "NO", 'type': EXITMENU, },
@@ -241,7 +241,7 @@ def processmenu(menu, parent = None):
   temp_files = listFilesInDirectory("dictionary")
   for arch in temp_files:
     if(arch[-4:]==".txt"):
-      dictfiles.append({ 'title': arch, 'type': CAPOPT, 'command': 'dictionary/' + arch})
+      dictfiles.append({ 'title': arch, 'type': DICTOPT, 'command': 'dictionary/' + arch})
   optioncount = len(menu['options'])
   exitmenu = False
   if parent is None:
@@ -360,14 +360,15 @@ def processmenu(menu, parent = None):
     elif menu['options'][getin]['type'] == CAPOPT:
       capture_file = menu['options'][getin]['command']
       set_data()
-      #exitmenu = True #returns to main menu
+      exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
 
     elif menu['options'][getin]['type'] == DICTOPT:
       password_list = menu['options'][getin]['command']
+      os.system('echo > log ' + str(menu['options'][getin]['command']))
       set_data()
-      #exitmenu = True #returns to main menu
+      exitmenu = True #returns to main menu
       screen.clear()
       screen.refresh()
 
