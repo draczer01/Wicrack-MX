@@ -1,7 +1,7 @@
 
 # Wicrack-MX
 
-A wifi cracking tool written in python wich has specific features to breack passwords from mexican service providers.
+A wifi cracking tool written in python wich has specific features to break passwords from mexican service providers.
 
 ## Installation
 
